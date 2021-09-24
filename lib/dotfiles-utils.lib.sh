@@ -76,8 +76,8 @@ dotfiles_is_cfged() {
 }
 
 emacsd_path_is_ok() {
-    [[ "${THISDIR}" =~ "$(basename $HOME)" ]] &&
-        [ "${THISDIR}/dir/.emacs.d" == "${EMACS_D_PATH}" ]
+    [[ "${EMACS_CONFIG_THISDIR}" =~ "$(basename $HOME)" ]] &&
+        [ "${EMACS_CONFIG_THISDIR}/dir/.emacs.d" == "${EMACS_D_PATH}" ]
 }
 
 _append_vim_to_dotfiles_config() {
@@ -190,8 +190,8 @@ dotfiles_config_paths_emacs() {
             "${DOTFILES_PATH}"/emacs_config/scripts/dotfiles-app-config-emacs.sh
             exit $?
         fi
-        export EMACS_D_PATH="${THISDIR}/emacs_config/link/list/.emacs.d"
-        export EMACS_ORG_TEMPLATES_PATH="${THISDIR}/link/org-capture-templates"
+        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
+        export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
         export CFG_UPDATED='true'
         _append_to_dotfiles_config_emacs
     fi
