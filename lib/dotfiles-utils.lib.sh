@@ -1,4 +1,4 @@
-#!/usr/env bash
+#!/usr/bin/env bash
 
 Ymd_HMS () { date +'%Y%m%d_%H%M%S' ; }
 bak_suffix=".bak_$(Ymd_HMS)"

@@ -1,6 +1,8 @@
 # emacs_config
 
 ## Requirements
+- macOS Command line developer tools
+- homebrew 
 
 ## Installation
 
@@ -18,7 +20,7 @@ git clone https://github.com/logicleee/emacs_config.git
 - Then run the install/setup scripts:
 ```
 cd emacs_config/
-# This script installs emacs on macOS:
+# This script installs Emacs (GUI) on macOS:
 ./scripts/dotfiles-app-install-emacs.sh
 
 # This script links / sets up .emacs.d
