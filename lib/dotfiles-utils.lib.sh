@@ -183,7 +183,8 @@ dotfiles_config_paths_emacs() {
 
         if ! emacsd_path_is_ok; then
             # NOTE: This is the ONLY place that should reference DOTFILES_PATH
-            echo "  EMACS_CONFIG_THISDIR: "
+            echo "  EMACS_CONFIG_THISDIR: $EMACS_CONFIG_THISDIR"
+            echo "          EMACS_D_PATH: ${EMACS_D_PATH}"
             echo "  ... Relocating this repo and starting over."
             export EMACS_D_PATH="${DOTFILES_PATH}/emacs_config/link/list/.emacs.d"
             export EMACS_ORG_TEMPLATES_PATH="${DOTFILES_PATH}/link/org-capture-templates"
