@@ -1,0 +1,19 @@
+.DS_Store
+
+venv/
+__pycache__/
+docs/build
+*.log
+*.pyc
+*.sw*
+*.zip
+.cache
+.coverage
+.coverage.*
+build
+dist
+
+# Environment / Secrets files
+
+# project
+TODO.org
