@@ -3,7 +3,7 @@
 set -e
 
 THISDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-export EMACS_CONFIG_THISDIR="$(dirname ${THISDIR}")
+export EMACS_CONFIG_THISDIR="$(dirname ${THISDIR})"
 
 source "${EMACS_CONFIG_THISDIR}/lib/dotfiles-utils.lib.sh"
 
