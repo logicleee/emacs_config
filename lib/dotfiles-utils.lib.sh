@@ -123,7 +123,7 @@ dotfiles_git_submodule_add_emacs_config() {
 dotfiles_emacs_install_purcells_config() {
     [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_LINK_PATH}/"
-    git submodule add https://github.com/purcell/emacs.d.git
+    git submodule add https://github.com/purcell/emacs.d.git .emacs.d
     cd -
 }
 
