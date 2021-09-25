@@ -76,7 +76,7 @@ dotfiles_is_cfged() {
 
 emacsd_path_is_ok() {
     [[ "${EMACS_CONFIG_THISDIR}" =~ "$(basename $HOME)" ]] &&
-        [ "${EMACS_CONFIG_THISDIR}/link/list/.emacs.d" == "${EMACS_D_PATH}" ]
+        [ "${EMACS_CONFIG_THISDIR}/link/.emacs.d" == "${EMACS_D_PATH}" ]
 }
 
 _append_vim_to_dotfiles_config() {
@@ -186,7 +186,7 @@ dotfiles_config_paths_emacs() {
             echo "  EMACS_CONFIG_THISDIR: $EMACS_CONFIG_THISDIR"
             echo "          EMACS_D_PATH: ${EMACS_D_PATH}"
             echo "  ... Relocating this repo and starting over..."
-            export EMACS_D_PATH="${DOTFILES_PATH}/emacs_config/link/list/.emacs.d"
+            export EMACS_D_PATH="${DOTFILES_PATH}/emacs_config/link/.emacs.d"
             export EMACS_ORG_TEMPLATES_PATH="${DOTFILES_PATH}/link/org-capture-templates"
             _append_to_dotfiles_config_emacs
             dotfiles_git_submodule_add_emacs_config
@@ -194,7 +194,7 @@ dotfiles_config_paths_emacs() {
             exit $?
         fi
 
-        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
+        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/.emacs.d"
         export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
         export CFG_UPDATED='true'
         _append_to_dotfiles_config_emacs
