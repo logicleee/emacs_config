@@ -13,7 +13,6 @@ dotfiles_config_paths_emacs
 
 source ~/.dotfiles_config
 
-
 export EMACS_LINK_PATH="$(dirname ${EMACS_D_PATH})"
 export EMACS_CONFIG_PATH="$(dirname ${EMACS_LINK_PATH})"
 export EMACS_D_PATH="${EMACS_D_PATH}"

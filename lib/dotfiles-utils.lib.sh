@@ -106,6 +106,7 @@ _create_or_append_dotfiles_to_dotfiles_config() {
 }
 
 _append_to_dotfiles_config_emacs() {
+    echo "export EMACS_D_PATH=${EMACS_D_PATH}" >>~/.dotfiles_config
     echo "export EMACS_ORG_PATH=${EMACS_ORG_PATH}" >>~/.dotfiles_config
     echo "export EMACS_ORG_ARCHIVE_PATH=${HOME}/org-zarchive" >>~/.dotfiles_config
     echo "export EMACS_ORG_MEDIA_PATH=${HOME}/org-media" >>~/.dotfiles_config
@@ -194,7 +195,7 @@ dotfiles_config_paths_emacs() {
             exit $?
         fi
 
-        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/.emacs.d"
+        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/link/.emacs.d"
         export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
         export CFG_UPDATED='true'
         _append_to_dotfiles_config_emacs
@@ -216,6 +217,9 @@ dotfiles_config_show_state() {
               DOTFILES_PATH: $DOTFILES_PATH
                    VIM_PATH: $VIM_PATH
                EMACS_D_PATH: $EMACS_D_PATH
+             EMACS_ORG_PATH: $EMACS_ORG_PATH
+     EMACS_ORG_ARCHIVE_PATH: $EMACS_ORG_ARCHIVE_PATH
+       EMACS_ORT_MEDIA_PATH: $EMACS_ORT_MEDIA_PATH
                DROPBOX_PATH: $DROPBOX_PATH
           GOOGLE_DRIVE_PATH: $GOOGLE_DRIVE_PATH
 
