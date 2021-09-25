@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # used for converting Emacs LaTeX to PDF
-# relies on basictex package being installed:
 
-brew cask install basictex
+brew install --cask basictex
 
 eval "$(/usr/libexec/path_helper)"
 sudo tlmgr update --self
@@ -23,4 +22,3 @@ sudo tlmgr install wasysym
 sudo tlmgr install titlesec
 sudo tlmgr install preprint #fullpage
 sudo tlmgr install enumitem
-

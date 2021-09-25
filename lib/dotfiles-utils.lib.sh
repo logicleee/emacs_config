@@ -113,24 +113,28 @@ _append_to_dotfiles_config_emacs() {
 }
 
 dotfiles_git_submodule_add_emacs_config() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${DOTFILES_PATH}" &&
         git submodule add https://github.com/logicleee/emacs_config.git &&
         cd -
 }
 
 dotfiles_emacs_install_purcells_config() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_LINK_PATH}/"
     git submodule add https://github.com/purcell/emacs.d.git
     cd -
 }
 
 dotfiles_emacs_install_jade_mode() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_D_SITE_LISP}"
     git submodule add https://github.com/brianc/jade-mode.git
     cd -
 }
 
 dotfiles_emacs_install_theme_solarized() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_D_SITE_LISP}"
     git submodule add https://github.com/sellout/emacs-color-theme-solarized.git
     ln -s "${EMACS_D_SITE_LISP}/emacs-color-theme-solarized/solarized-"* \
@@ -139,12 +143,14 @@ dotfiles_emacs_install_theme_solarized() {
 }
 
 dotfiles_emacs_update_config() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_LINK_PATH}/"
     git pull
     cd -
 }
 
 dotfiles_emacs_link_files() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     mkdir -p "${EMACS_D_THEMES}"
     _dotfiles_link_item "${EMACS_D_PATH}" ~/.emacs.d
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}" "${EMACS_D_PATH}/"
@@ -154,19 +160,14 @@ dotfiles_emacs_link_files() {
 
 dotfiles_config_paths_emacs() {
     export CFG_EXISTS='false'
-    export CFG_OK='false'
     export CFG_UPDATED='false'
 
     [ -e ~/.dotfiles_config ] && source ~/.dotfiles_config
 
     [ -e ~/.dotfiles_config ] && export CFG_EXISTS='true'
 
-    emacs_org_is_cfged &&
-        emacsd_path_is_ok &&
-        export CFG_OK='true'
-
-    if [ $CFG_OK = 'false' ]; then
-        if dropbox_path_exists && ! emacs_org_is_cfged; then
+    if ! emacs_org_is_cfged; then
+        if dropbox_path_exists; then
             if ! dropbox_is_cfged; then
                 export DROPBOX_PATH=${HOME}/Dropbox
                 _append_dropbox_to_dotfiles_config
@@ -174,30 +175,59 @@ dotfiles_config_paths_emacs() {
             export EMACS_ORG_PATH="${DROPBOX_PATH}/org"
             export EMACS_ORG_ARCHIVE_PATH="${DROPBOX_PATH}/org-zarchive"
             export EMACS_ORG_MEDIA_PATH="${DROPBOX_PATH}/org-media"
-        elif ! emacs_org_is_cfged; then
+        else
             export EMACS_ORG_PATH="${HOME}/org"
             export EMACS_ORG_ARCHIVE_PATH="${HOME}/org-zarchive"
             export EMACS_ORG_MEDIA_PATH="${HOME}/org-media"
         fi
 
-        if dotfiles_is_cfged && ! emacs_org_is_cfged && ! emacsd_path_is_ok; then
+        if dotfiles_is_cfged && ! emacsd_path_is_ok; then
             # NOTE: This is the ONLY place that should reference DOTFILES_PATH
             echo "  EMACS_CONFIG_THISDIR: $EMACS_CONFIG_THISDIR"
             echo "          EMACS_D_PATH: ${EMACS_D_PATH}"
-            echo "  ... Relocating this repo and starting over."
+            echo "  ... Relocating this repo and starting over..."
             export EMACS_D_PATH="${DOTFILES_PATH}/emacs_config/link/list/.emacs.d"
             export EMACS_ORG_TEMPLATES_PATH="${DOTFILES_PATH}/link/org-capture-templates"
             _append_to_dotfiles_config_emacs
             dotfiles_git_submodule_add_emacs_config
-            "${DOTFILES_PATH}"/emacs_config/scripts/dotfiles-app-config-emacs.sh
+            "${DOTFILES_PATH}"/emacs_config/scripts/dotfiles-usr-82-cfg-emacs.sh
             exit $?
         fi
 
-        if ! emacs_org_is_cfged; then
-            export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
-            export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
-            export CFG_UPDATED='true'
-            _append_to_dotfiles_config_emacs
-        fi
+        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
+        export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
+        export CFG_UPDATED='true'
+        _append_to_dotfiles_config_emacs
     fi
+}
+
+dotfiles_config_show_state() {
+    [ -e ~/.dotfiles_config ] ||
+        echo "  ##### ~/.dotfiles_config DOES NOT EXIST #####"
+    [ -e ~/.dotfiles_config ] &&
+        echo "  ###### CONTENTS OF ~/.dotfiles_config #######"
+
+    [ -e ~/.dotfiles_config ] && cat ~/.dotfiles_config
+
+    cat <<E0F
+
+    ################# ENVIRONMENT #################
+                      DEBUG: $DEBUG
+              DOTFILES_PATH: $DOTFILES_PATH
+                   VIM_PATH: $VIM_PATH
+               EMACS_D_PATH: $EMACS_D_PATH
+               DROPBOX_PATH: $DROPBOX_PATH
+          GOOGLE_DRIVE_PATH: $GOOGLE_DRIVE_PATH
+
+                    THISDIR: $THISDIR
+       EMACS_CONFIG_THISDIR: $EMACS_CONFIG_THISDIR
+            EMACS_LINK_PATH: $EMACS_LINK_PATH
+          EMACS_CONFIG_PATH: $EMACS_CONFIG_PATH
+          EMACS_D_SITE_LISP: $EMACS_D_SITE_LISP
+         EMACS_D_LISP_LOCAL: $EMACS_D_LISP_LOCAL
+             EMACS_D_THEMES: $EMACS_D_THEMES
+      EMACS_SETUP_DONE_FLAG: $EMACS_SETUP_DONE_FLAG
+    ###############################################
+
+E0F
 }

@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+export DEBUG='true'
 
+set -e
+[ $DEBUG = 'true' ] && set -x
 THISDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 export EMACS_CONFIG_THISDIR="$(dirname ${THISDIR})"
 
@@ -11,6 +13,7 @@ dotfiles_config_paths_emacs
 
 source ~/.dotfiles_config
 
+
 export EMACS_LINK_PATH="$(dirname ${EMACS_D_PATH})"
 export EMACS_CONFIG_PATH="$(dirname ${EMACS_LINK_PATH})"
 export EMACS_D_PATH="${EMACS_D_PATH}"
@@ -18,6 +21,8 @@ export EMACS_D_SITE_LISP="${EMACS_D_PATH}/site-lisp"
 export EMACS_D_LISP_LOCAL="${EMACS_D_PATH}/lisp-local"
 export EMACS_D_THEMES="${EMACS_D_PATH}/themes"
 export EMACS_SETUP_DONE_FLAG="${EMACS_CONFIG_PATH}/EMACS_SETUP_DONE.FLAG"
+
+[ $DEBUG = 'true' ] && dotfiles_config_show_state
 
 # check if setup done flag && exit
 if [ -f "${EMACS_SETUP_DONE_FLAG}" ]; then
