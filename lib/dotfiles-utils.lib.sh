@@ -167,7 +167,8 @@ dotfiles_emacs_link_files() {
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}" "${EMACS_D_PATH}/lisp-local"
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}/init-local.el" \
         "$EMACS_D_PATH/lisp/init-local.el"
-    _dotfiles_link_item "${EMACS_ORG_PATH}" "${HOME}/org"
+    [ -d "${EMACS_ORG_PATH}" ] ||
+        _dotfiles_link_item "${EMACS_ORG_PATH}" "${HOME}/org"
     _dotfiles_link_item "${EMACS_ORG_TEMPLATES_PATH}" "${HOME}/org/templates"
     _dotfiles_link_item "${EMACS_ORG_MEDIA_PATH}" "${HOME}/org/media"
     _dotfiles_link_item "${EMACS_ORG_ARCHIVE_PATH}" "${HOME}/org/zarchive"
