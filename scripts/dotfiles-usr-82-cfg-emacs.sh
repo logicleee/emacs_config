@@ -17,7 +17,7 @@ export EMACS_LINK_PATH="$(dirname ${EMACS_D_PATH})"
 export EMACS_CONFIG_PATH="$(dirname ${EMACS_LINK_PATH})"
 export EMACS_D_PATH="${EMACS_D_PATH}"
 export EMACS_D_SITE_LISP="${EMACS_D_PATH}/site-lisp"
-export EMACS_D_LISP_LOCAL="${EMACS_D_PATH}/lisp-local"
+export EMACS_D_LISP_LOCAL="${EMACS_LINK_PATH}/lisp-local"
 export EMACS_D_THEMES="${EMACS_D_PATH}/themes"
 export EMACS_SETUP_DONE_FLAG="${EMACS_CONFIG_PATH}/EMACS_SETUP_DONE.FLAG"
 
