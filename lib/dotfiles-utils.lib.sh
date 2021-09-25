@@ -80,15 +80,15 @@ emacsd_path_is_ok() {
 }
 
 _append_vim_to_dotfiles_config() {
-    echo "VIM_PATH=${VIM_PATH}" >~/.dotfiles_config
+    echo "export VIM_PATH=${VIM_PATH}" >>~/.dotfiles_config
 }
 
 _append_dropbox_to_dotfiles_config() {
-    echo "DROPBOX_PATH=${DROPBOX_PATH}" >~/.dotfiles_config
+    echo "export DROPBOX_PATH=${DROPBOX_PATH}" >>~/.dotfiles_config
 }
 
 _append_to_dotfiles_config_gdrive() {
-    echo "GOOGLE_DRIVE_PATH=${GOOGLE_DRIVE_PATH}" >~/.dotfiles_config
+    echo "export GOOGLE_DRIVE_PATH=${GOOGLE_DRIVE_PATH}" >>~/.dotfiles_config
 }
 
 _create_or_append_dotfiles_to_dotfiles_config() {
@@ -96,7 +96,7 @@ _create_or_append_dotfiles_to_dotfiles_config() {
         if [ -e ~/.dotfiles_config ]; then
             mv ~/.dotfiles_config ~/.dotfiles_config.tmp || return 1
         fi
-        echo "DOTFILES_PATH=${DOTFILES_PATH}" >~/.dotfiles_config || return 2
+        echo "export DOTFILES_PATH=${DOTFILES_PATH}" >>~/.dotfiles_config || return 2
         if [ -e ~/.dotfiles_config.tmp ]; then
             cat ~/.dotfiles_config.tmp >>~/.dotfiles_config || return 3
             rm ~/.dotfiles_config.tmp || return 4
@@ -106,9 +106,9 @@ _create_or_append_dotfiles_to_dotfiles_config() {
 }
 
 _append_to_dotfiles_config_emacs() {
-    echo "EMACS_ORG_PATH=${EMACS_ORG_PATH}" >~/.dotfiles_config
-    echo "EMACS_ORG_ARCHIVE_PATH=${HOME}/org-zarchive" >~/.dotfiles_config
-    echo "EMACS_ORG_MEDIA_PATH=${HOME}/org-media" >~/.dotfiles_config
+    echo "export EMACS_ORG_PATH=${EMACS_ORG_PATH}" >>~/.dotfiles_config
+    echo "export EMACS_ORG_ARCHIVE_PATH=${HOME}/org-zarchive" >>~/.dotfiles_config
+    echo "export EMACS_ORG_MEDIA_PATH=${HOME}/org-media" >>~/.dotfiles_config
 
 }
 
