@@ -152,7 +152,8 @@ dotfiles_emacs_update_config() {
 
 dotfiles_emacs_link_files() {
     [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
-    mkdir -p "${EMACS_D_THEMES}"
+    [ -d "${EMACS_D_THEMES}" ] || mkdir -p "${EMACS_D_THEMES}"
+    [ -d "${EMACS_ORG_PATH}" ] || mkdir -p "${EMACS_ORG_PATH}"
     _dotfiles_link_item "${EMACS_D_PATH}" ~/.emacs.d
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}" "${EMACS_D_PATH}/lisp-local"
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}/init-local.el" \
