@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-Ymd_HMS () { date +'%Y%m%d_%H%M%S' ; }
+Ymd_HMS() { date +'%Y%m%d_%H%M%S'; }
 bak_suffix=".bak_$(Ymd_HMS)"
 
-_if_link_exists_remove_it () {
+_if_link_exists_remove_it() {
     if [ "$#" -ne 1 ]; then
         echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
         return 1
@@ -11,7 +11,7 @@ _if_link_exists_remove_it () {
     [ -L "$1" ] && rm -v "$1"
 }
 
-_if_exists_move_but_backup_item () {
+_if_exists_move_but_backup_item() {
     if [ "$#" -ne 1 ]; then
         echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
         return 1
@@ -27,7 +27,7 @@ _if_exists_move_but_backup_item () {
     return 0
 }
 
-_dotfiles_link_item () {
+_dotfiles_link_item() {
     if [ "$#" -ne 2 ]; then
         echo "ERROR: ${FUNCNAME[0]} expected 2 arguments but received $#"
         return 1
@@ -36,8 +36,7 @@ _dotfiles_link_item () {
     local dest="$2"
 
     # test arg 1 exists or skip
-    if [ ! -e "$src" ] 
-    then
+    if [ ! -e "$src" ]; then
         echo "WARNING: Missing source file, skipping: $src"
         return 0
     fi
@@ -167,21 +166,21 @@ dotfiles_config_paths_emacs() {
         export CFG_OK='true'
 
     if [ $CFG_OK = 'false' ]; then
-        if dropbox_path_exists; then
+        if dropbox_path_exists && ! emacs_org_is_cfged; then
             if ! dropbox_is_cfged; then
                 export DROPBOX_PATH=${HOME}/Dropbox
                 _append_dropbox_to_dotfiles_config
             fi
-            export EMACS_ORG_PATH="${HOME}/Dropbox/org"
-            export EMACS_ORG_ARCHIVE_PATH="${HOME}/Dropbox/org-zarchive"
-            export EMACS_ORG_MEDIA_PATH="${HOME}/Dropbox/org-media"
-        else
+            export EMACS_ORG_PATH="${DROPBOX_PATH}/org"
+            export EMACS_ORG_ARCHIVE_PATH="${DROPBOX_PATH}/org-zarchive"
+            export EMACS_ORG_MEDIA_PATH="${DROPBOX_PATH}/org-media"
+        elif ! emacs_org_is_cfged; then
             export EMACS_ORG_PATH="${HOME}/org"
             export EMACS_ORG_ARCHIVE_PATH="${HOME}/org-zarchive"
             export EMACS_ORG_MEDIA_PATH="${HOME}/org-media"
         fi
 
-        if ! emacsd_path_is_ok; then
+        if dotfiles_is_cfged && ! emacs_org_is_cfged && ! emacsd_path_is_ok; then
             # NOTE: This is the ONLY place that should reference DOTFILES_PATH
             echo "  EMACS_CONFIG_THISDIR: $EMACS_CONFIG_THISDIR"
             echo "          EMACS_D_PATH: ${EMACS_D_PATH}"
@@ -193,9 +192,12 @@ dotfiles_config_paths_emacs() {
             "${DOTFILES_PATH}"/emacs_config/scripts/dotfiles-app-config-emacs.sh
             exit $?
         fi
-        export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
-        export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
-        export CFG_UPDATED='true'
-        _append_to_dotfiles_config_emacs
+
+        if ! emacs_org_is_cfged; then
+            export EMACS_D_PATH="${EMACS_CONFIG_THISDIR}/emacs_config/link/list/.emacs.d"
+            export EMACS_ORG_TEMPLATES_PATH="${EMACS_CONFIG_THISDIR}/link/org-capture-templates"
+            export CFG_UPDATED='true'
+            _append_to_dotfiles_config_emacs
+        fi
     fi
 }
