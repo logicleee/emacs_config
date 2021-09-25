@@ -8,7 +8,7 @@ _if_link_exists_remove_it() {
         echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
         return 1
     fi
-    [ -L "$1" ] && rm -v "$1"
+    if [ -L "$1" ]; then rm -v "$1" ; fi
 }
 
 _if_exists_move_but_backup_item() {
@@ -219,7 +219,7 @@ dotfiles_config_show_state() {
                EMACS_D_PATH: $EMACS_D_PATH
              EMACS_ORG_PATH: $EMACS_ORG_PATH
      EMACS_ORG_ARCHIVE_PATH: $EMACS_ORG_ARCHIVE_PATH
-       EMACS_ORT_MEDIA_PATH: $EMACS_ORT_MEDIA_PATH
+       EMACS_ORG_MEDIA_PATH: $EMACS_ORG_MEDIA_PATH
                DROPBOX_PATH: $DROPBOX_PATH
           GOOGLE_DRIVE_PATH: $GOOGLE_DRIVE_PATH
 
