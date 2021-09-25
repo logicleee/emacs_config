@@ -8,7 +8,7 @@ _if_link_exists_remove_it() {
         echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
         return 1
     fi
-    if [ -L "$1" ]; then rm -v "$1" ; fi
+    if [ -L "$1" ]; then rm -v "$1"; fi
 }
 
 _if_exists_move_but_backup_item() {
@@ -150,10 +150,19 @@ dotfiles_emacs_update_config() {
     cd -
 }
 
-dotfiles_emacs_link_files() {
+dotfiles_emacs_create_base_paths() {
     [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     [ -d "${EMACS_D_THEMES}" ] || mkdir -p "${EMACS_D_THEMES}"
     [ -d "${EMACS_ORG_PATH}" ] || mkdir -p "${EMACS_ORG_PATH}"
+    [ -d "${EMACS_ORG_TEMPLATES_PATH}" ] ||
+        mkdir -p "${EMACS_ORG_TEMPLATES_PATH}"
+    [ -d "${EMACS_ORG_MEDIA_PATH}" ] || mkdir -p "${EMACS_ORG_MEDIA_PATH}"
+    [ -d "${EMACS_ORG_ARCHIVE_PATH}" ] || mkdir -p "${EMACS_ORG_ARCHIVE_PATH}"
+}
+
+dotfiles_emacs_link_files() {
+    [ $DEBUG = 'true' ] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
+    dotfiles_emacs_create_base_paths
     _dotfiles_link_item "${EMACS_D_PATH}" ~/.emacs.d
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}" "${EMACS_D_PATH}/lisp-local"
     _dotfiles_link_item "${EMACS_D_LISP_LOCAL}/init-local.el" \
