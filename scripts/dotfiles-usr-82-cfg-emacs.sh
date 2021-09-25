@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export DEBUG='true'
+export DEBUG='false'
+#export DEBUG='true'
 
 set -e
 [ $DEBUG = 'true' ] && set -x
