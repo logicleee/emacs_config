@@ -1,0 +1,9 @@
+#+FILETAGS: ref refname
+/see [[https://orgmode.org/manual/Internal-archiving.html#Internal-archiving][Internal Archiving]]/
+* REF REFNAME                                                                   :reflist:
+* PROCESS                                                                       :process:
+* KNOWLEDGE                                                                     :knowledge:
+* VER PROCESS DRAFT                                                             :draft:
+* VER PROCESS ARCHIVE                                                           :ARCHIVE:
+* VER KNOWLEDGE DRAFT                                                           :draft:
+* VER KNOWLEDGE ARCHIVE                                                         :ARCHIVE:

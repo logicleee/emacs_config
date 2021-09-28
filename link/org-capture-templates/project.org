@@ -1,0 +1,24 @@
+#+FILETAGS: pj pjtag
+search & replace PJNAME
+* PROJECT PJNAME                                                                :pjlist:
+* GOALS                                                                         :goal:
+** Commited                                                                     :commited:
+** Stretch                                                                      :stretch:
+** Backlog                                                                      :backlog:
+** Completed                                                                    :completed:
+* STATUS: PJNAME                                                                :pjstatus:
+  SCHEDULED: <2021-07-09 Fri 09:00 +1w>
+* REQUIREMENTS                                                                  :requirement:
+* PLANNING                                                                      :planning:
+** Refile Tasks                                                                 :refile:
+** Out of scope                                                                 :outofscope:
+* PLAN
+  :PROPERTIES:
+  :BLOCKING: t
+  :END:
+** Objective_or_Milestone :obj:milestone:
+*** Task
+*** Linked task to another milestone
+* FILES AND RESOURCES                                                           :resources:
+* IDEAS                                                                         :idea:
+* MEETINGS                                                                      :meeting:

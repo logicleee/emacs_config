@@ -1,0 +1,9 @@
+#+FILETAGS: area areaname
+* AREA AREANAME                                                                 :arealist:
+* TASKS                                                                         :task:
+* PERIODIC                                                                      :periodic:
+** Update reference material
+* MEETINGS                                                                      :meeting:
+* MEASUREMENTS                                                                  :measurement:
+* IDEAS                                                                         :idea:
+* EVENTS                                                                        :event:

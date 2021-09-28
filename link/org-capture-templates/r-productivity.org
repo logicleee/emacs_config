@@ -1,0 +1,157 @@
+#+FILETAGS: ref productivity gtd
+* REF Productivity                                                              :reflist:
+* PROCESS                                                                       :process:
+** Workflow
+* KNOWLEDGE                                                                     :knowledge:
+** add to cheatsheets
+*** orgmode
+   - remove/filter DONE/CANX from view org-show-todo-tree :: C-c / t
+** Emacs config changes
+*** macOS hide others
+    :PROPERTIES:
+    :DATE_ADDED: [2021-08-30 Mon 10:00]
+    :STATUS_SHORT:
+    :STATUS:
+    :URL:
+    :Effort:   0:15
+    :END:
+ #+begin_src elisp
+ (global-set-key (kbd "M-s-˙") 'ns-do-hide-others) ;; maybe/not add
+ (global-set-key (kbd "M-s-h") 'ns-do-hide-others)
+ (global-set-key [142607065] 'ns-do-hide-others)
+ #+end_src
+** other config changes
+*** md2pdf
+#+begin_src sh
+# first make sure to have these dependencies
+brew install pandoc
+brew install pdflatex
+
+# then add this to ~/.bash_aliases
+md2pdf () {
+        if [ "$#" -ne 1 ] || [ ! -e "${1}" ]; then
+                echo "ERROR: provide a valid markdown file"
+                return 1
+        fi
+        pandoc "${1}" --to=pdf -t latex -o "${1//.md/.pdf}" \
+                --pdf-engine=/Library/TeX/texbin/pdflatex
+}
+#+end_src
+
+
+* VERSIONS
+** PROCESS DEVELOP
+*** Saved searches list
+    IMPORTANT
+    - What am I doing now, today, this week, this sprint (high level)?
+        - What is my schedule? :: C-caa
+        - What is recurring? :: C-cam <am/pm/daily/weekly/monthly/yearly>
+        - Project work items :: C-cat <WAITING/DOING/QUEUED/NEXT>
+    - What is the next thing to do? (task level)
+    - What did I spend time on (clock report)?
+    FREQUENT
+    - Project list :: C-cam pjlist
+    - Project status :: C-cam pjstatus
+    - Refile :: C-cam refile
+    COB All Projects - status update & next action:
+    [[*Daily Clock report][Daily Clock report]]
+    INFREQUENT
+    - what are project files? :: C-u M-! ls ~/org/p-*
+    - All SCHEDULED items in the last month C-c a m Match: SCHEDULED>"<-1m>"
+    - Define/review tags
+*** Process - PJ's:
+    - post-action status update
+        *Progressive summarization*
+        C-c C-z
+        Log a note for this task
+    - Cleanup / Promote project tasks
+        List of pj items to promote to WAITING :: C-cat (DOING) r //pj
+        List of pj items to promote to DOING :: C-cat (QUEUED) r //pj
+        List of pj items to promote to QUEUED :: C-cat (NEXT) r //pj
+        List of pj items to promote to NEXT :: C-cat (TODO) r //pj
+    - Weekly status update
+        *Progressive summarization*
+        search for NEXT + pjstatus
+        - report
+        use [[https://orgmode.org/manual/Special-Properties.html#Special-Properties][properties]] and [[https://orgmode.org/manual/Scope-of-column-definitions.html#Scope-of-column-definitions][column view]] to generate report
+        STATUS_SHORT
+        STATUS
+
+    see more: https://orgmode.org/manual/Storing-searches.html
+
+*** Handling dependencies
+     - Use <PROPERTIES :ORDERED :  t> when there is a [[https://orgmode.org/manual/TODO-dependencies.html#TODO-dependencies][sequence to line-items]]
+     - Use new todos w/ links to other items to relate different subtrees
+     - Remember: PJ's are for time-tracking, execution & reporting what/when was done, REF is curated state/config/knowledge/processes
+
+*** Send templates to one file
+    *use C-c C-c to eval*
+    #+NAME: templates
+    #+begin_src sh
+    cd ~/org/templates/ && tail -n10000 *org > templates_combined_$(date +%Y%m%d).txt && open .
+    open ~/org/templates/
+    #+end_src
+   #+RESULTS: templates
+
+** PROCESS DEVELOP
+*** TODO process inbox queues                                                   :inbox:
+**** TODO enter tasks
+**** TODO Process Search: inbox
+**** TODO refile other
+**** TODO Slack people
+**** TODO Slack slackbot
+**** TODO email
+**** TODO calendar / scheduling
+**** TODO emacs
+*** TODO Follow-ups                                                             :followups:
+*** TODO notes added to completed tasks
+*** TODO next actions selected
+*** TODO sync GCal and Orgmode
+** NEXT Weekly Review
+*** TODO Convert this to a snippet
+*** TODO Search for list of PJ status headlines: pjstatus
+**** TODO review activity and update status
+*** TODO check project structure -- does it make sense?
+*** TODO make/update Dropbox/Google Drive folders to match org
+*** TODO make/update chrome bookmark tabs to match org
+*** TODO add any needed projects from tasks
+
+** PROCESS ARCHIVE
+** KNOWLEDGE DEVELOP
+** KNOWLEDGE ARCHIVE
+
+* Report ideas
+Effort to actual: https://orgmode.org/manual/Effort-Estimates.html
+is it possible to see DONE tasks report?
+monthly / yearly project status report
+What will PERSON want to know -> how to collect into report?
+* Daily Clock report
+  :URL: https://orgmode.org/manual/The-clock-table.html
+    *C-c C-x C-u (org-dblock-update)*
+#+BEGIN: clocktable :maxlevel 5 :emphasize nil :scope agenda :block today :links true :compact t :link t :formula % :fileskip0 t
+#+CAPTION:
+#+END: clocktable
+* Yesterday Clock report
+  :URL: https://orgmode.org/manual/The-clock-table.html
+    *C-c C-x C-u (org-dblock-update)*
+#+BEGIN: clocktable :maxlevel 5 :emphasize nil :scope agenda :block yesterday :links true :compact t :link t :formula % :fileskip0 t
+#+CAPTION:
+#+END: clocktable
+* Weekly Clock report
+  :URL: https://orgmode.org/manual/The-clock-table.html
+    *C-c C-x C-u (org-dblock-update)*
+#+BEGIN: clocktable :maxlevel 5 :emphasize nil :scope agenda :block thisweek :links true :compact t :link t :formula % :fileskip0 t
+#+CAPTION:
+#+END: clocktable
+* Monthly Clock report
+  :URL: https://orgmode.org/manual/The-clock-table.html
+    *C-c C-x C-u (org-dblock-update)*
+#+BEGIN: clocktable :maxlevel 5 :emphasize nil :scope agenda :block thismonth :links true :compact t :link t :formula % :fileskip0 t
+#+CAPTION:
+#+END: clocktable
+* Clock report
+  :URL: https://orgmode.org/manual/The-clock-table.html
+    *C-c C-x C-u (org-dblock-update)*
+#+BEGIN: clocktable :maxlevel 2 :emphasize nil :scope agenda :block untilnow :links true
+#+CAPTION: Clock summary at [2021-08-19 Thu 10:06], for now.
+#+END: clocktable

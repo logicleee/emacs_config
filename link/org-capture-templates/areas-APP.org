@@ -1,0 +1,13 @@
+#+FILETAGS: area
+* AREA AREANAME                                                                 :arealist:
+* TASKS                                                                         :task:
+* PERIODIC                                                                      :periodic:
+** Monitoring                                                                   :support:
+** Bugs                                                                         :support:bugs:
+** Admin                                                                        :support:admin:
+** Features                                                                     :support:features:
+** Documentation                                                                :support:docs:
+* MEETINGS                                                                      :meeting:
+* MEASUREMENTS                                                                  :measurement:
+* IDEAS                                                                         :idea:
+* EVENTS                                                                        :event:

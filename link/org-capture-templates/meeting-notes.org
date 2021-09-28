@@ -1,0 +1,24 @@
+* Meeting on %U
+  :PROPERTIES:
+  :DATE_ADDED: %U
+  :URL: 
+  :Effort:   0:30
+  :END:
+  ATTENDEES
+  - 
+  PURPOSE
+   - %?
+  AGENDA
+  - 
+  LEE
+  - 
+  NOTES
+  - 
+  DECISIONS
+  -  
+  ACTION ITEMS
+  - [ ] 
+
+
+
+

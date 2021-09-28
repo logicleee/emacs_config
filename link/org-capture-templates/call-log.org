@@ -1,0 +1,6 @@
+* TODO Refile call notes from %?
+  :PROPERTIES:
+  :DATE_ADDED: %U
+  :URL: 
+  :CALL_FROM: 
+  :END:

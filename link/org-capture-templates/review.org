@@ -1,0 +1,40 @@
+* EOD Review
+   SCHEDULED: <2021-08-01 Sun 16:45>
+  :PROPERTIES:
+  :DATE_ADDED: %U
+  :URL:
+  :Effort:   0:15
+  :END:
+  - [ ] What am I doing now? (and TODO states)
+    - clock in while doing; fix as needed
+      - When clocking out, if status update needed, update status, else catch in review
+      - when going from DOING -> DONE/WAITING
+        - There is likely a status impact
+        - use C-c C-z to capture note
+    - Search DOING :: C-cat (DOING)
+    - Search WAITING for followups :: C-cat (WAITING)
+  - [ ] What do I need to do?
+        *Saved searches*
+    - What is my schedule today? :: C-caa
+    - What have I commited to this week? :: C-cat (QUEUED)
+  - [ ] What do I need to talk to others about?
+    - For each meeting, have an AGENDA ITEMS for pending questions/updates from me
+  - [ ] What is incoming? Process inbox
+        *what? -> actionable? -> next action? -> less than 2m?*
+    - refile/INBOX
+        Refile - C-cam refile
+    - slack: slackbot, people
+    - enter tasks
+    - email
+    - calendar (new events)
+    - meeting notes (use clockreport)
+  - [ ] What is the status?
+        *Progressive summarization*
+        - add status or followup item for action items from meetings
+        - add project status
+        - what projects am I working on?
+  - [ ] What really needs to be done tomorrow?
+  - [ ] What did I do today?
+        *C-c C-x C-u (org-dblock-update)*
+    #+BEGIN: clocktable :maxlevel 5 :emphasize nil :scope agenda :block today :links true :compact t :link t :formula % :fileskip0 t
+    #+END: clocktable

@@ -1,0 +1,8 @@
+* TODO %?
+  :PROPERTIES:
+  :DATE_ADDED: %U
+  :STATUS_SHORT: 
+  :STATUS: 
+  :URL: 
+  :Effort:   0:15
+  :END:
