@@ -155,3 +155,15 @@ What will PERSON want to know -> how to collect into report?
 #+BEGIN: clocktable :maxlevel 2 :emphasize nil :scope agenda :block untilnow :links true
 #+CAPTION: Clock summary at [2021-08-19 Thu 10:06], for now.
 #+END: clocktable
+* Github setup home/work
+- update ~/.ssh/config
+#+begin_src
+Host githome
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_personal
+#+end_src
+#+begin_src sh
+git remote -v
+git remote set-url origin ssh://git@githome/<user>/<repo>.git
+#+end_src
