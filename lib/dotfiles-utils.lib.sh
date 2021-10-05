@@ -60,7 +60,9 @@ dotfiles_link_all() {
 }
 
 _dotfiles_create_local_git_branch() {
-    git checkout -b "${UID}.$(hostname)"
+    cd "${DOTFILES_BASE_PATH}" 
+    git checkout -b "${UID}.$(hostname)" 
+    cd -
 }
 
 dotfiles_link_dotfiles() {
@@ -424,7 +426,7 @@ _create_or_append_dotfiles_to_dotfiles_config() {
     fi
 
     if ! gdrive_is_cfged; then
-        export DOTFILES_GDRIVE_PATH="${HOME}"/Google\ Drive
+        export DOTFILES_GDRIVE_PATH="${HOME}/Google Drive"
     fi
 
     if ! dotfiles_is_cfged; then
@@ -526,6 +528,12 @@ dotfiles_config_paths_emacs() {
     [[ -e ~/.dotfiles_config ]] && export CFG_EXISTS='true'
 
     if ! emacs_org_is_cfged; then
+        if dropbox_is_cfged; then
+            if ! dropbox_path_exists; then
+                mkdir -p "${DOTFILES_DROPBOX_PATH}"
+            fi
+        fi
+
         if dropbox_path_exists; then
             if ! dropbox_is_cfged; then
                 export DOTFILES_DROPBOX_PATH=${HOME}/Dropbox
