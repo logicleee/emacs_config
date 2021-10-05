@@ -453,8 +453,8 @@ E00F
 _append_to_dotfiles_config_emacs() {
     echo "export EMACS_D_PATH=${EMACS_D_PATH}" >>~/.dotfiles_config
     echo "export EMACS_ORG_PATH=${EMACS_ORG_PATH}" >>~/.dotfiles_config
-    echo "export EMACS_ORG_ARCHIVE_PATH=${HOME}/org-zarchive" >>~/.dotfiles_config
-    echo "export EMACS_ORG_MEDIA_PATH=${HOME}/org-media" >>~/.dotfiles_config
+    echo "export EMACS_ORG_ARCHIVE_PATH=${EMACS_ORG_ARCHIVE_PATH}" >>~/.dotfiles_config
+    echo "export EMACS_ORG_MEDIA_PATH=${EMACS_ORG_MEDIA_PATH}" >>~/.dotfiles_config
 
 }
 
@@ -554,7 +554,7 @@ dotfiles_config_paths_emacs() {
             echo "          EMACS_D_PATH: ${EMACS_D_PATH}"
             echo "  ... Relocating this repo and starting over..."
             export EMACS_D_PATH="${DOTFILES_PATH}/emacs_config/link/.emacs.d"
-            export EMACS_ORG_TEMPLATES_PATH="${DOTFILES_PATH}/link/org-capture-templates"
+            export EMACS_ORG_TEMPLATES_PATH="${DOTFILES_PATH}/emacs_config/link/org-capture-templates"
             _append_to_dotfiles_config_emacs
             dotfiles_git_submodule_add_emacs_config
             "${DOTFILES_PATH}"/emacs_config/scripts/dotfiles-usr-82-cfg-emacs.sh
