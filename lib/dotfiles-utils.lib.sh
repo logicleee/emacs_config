@@ -33,13 +33,6 @@ export DOTFILES_LN_SYS_PLATFORM="${DOTFILES_LN_SYS_PATH}/${PLATFORM}"
 export DOTFILES_BASH_PROFILE_PATH="${DOTFILES_LN_USER_PATH}/.bash_profile"
 export DOTFILES_VIM_PATH="${DOTFILES_LN_USER_COMMON}/.vim"
 
-if ! dropbox_is_cfged; then
-    export DOTFILES_DROPBOX_PATH="${HOME}/Dropbox"
-fi
-
-if ! gdrive_is_cfged; then
-    export DOTFILES_GDRIVE_PATH="${HOME}"/Google\ Drive
-fi
 
 
 Ymd_HMS() { date +'%Y%m%d_%H%M%S'; }
@@ -157,7 +150,7 @@ $(grep "includeIf\|path" ~/.gitconfig)
     ~/dotfiles/local/iTerm/
 
 -> A separate branch has been created for this user:
-$(git status)
+$(cd "$DOTFILES_BASE_PATH" && git status && cd - ;)
 
 -> You can also now run the following commands to set user defaults 
 for $(whoami):
@@ -426,6 +419,14 @@ _append_gdrive_to_dotfiles_config() {
 }
 
 _create_or_append_dotfiles_to_dotfiles_config() {
+    if ! dropbox_is_cfged; then
+        export DOTFILES_DROPBOX_PATH="${HOME}/Dropbox"
+    fi
+
+    if ! gdrive_is_cfged; then
+        export DOTFILES_GDRIVE_PATH="${HOME}"/Google\ Drive
+    fi
+
     if ! dotfiles_is_cfged; then
         if [[ -e ~/.dotfiles_config ]]; then
             mv ~/.dotfiles_config ~/.dotfiles_config.tmp || return 1
@@ -436,7 +437,7 @@ _create_or_append_dotfiles_to_dotfiles_config() {
 export DOTFILES_BASE_PATH=${DOTFILES_BASE_PATH}
 export DOTFILES_PATH=${DOTFILES_PATH}
 export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH}
-export DOTFILES_GDRIVE_PATH=${DOTFILES_GDRIVE_PATH}
+export DOTFILES_GDRIVE_PATH="${DOTFILES_GDRIVE_PATH}"
 E00F
 
         if [[ -e ~/.dotfiles_config.tmp ]]; then
