@@ -392,7 +392,7 @@ emacs_org_is_cfged() { grep EMACS_ORG ~/.dotfiles_config >/dev/null 2>&1; }
 
 dropbox_is_cfged() { grep DOTFILES_DROPBOX_PATH ~/.dotfiles_config >/dev/null 2>&1; }
 
-dropbox_path_exists() { [[ -e ~/Dropbox ]]; }
+dropbox_path_exists() { [[ -d ~/Dropbox ]]; }
 
 gdrive_is_cfged() { grep DOTFILES_GDRIVE_PATH ~/.dotfiles_config >/dev/null 2>&1; }
 
@@ -530,7 +530,7 @@ dotfiles_config_paths_emacs() {
     if ! emacs_org_is_cfged; then
         if dropbox_is_cfged; then
             if ! dropbox_path_exists; then
-                mkdir -p "${DOTFILES_DROPBOX_PATH}"
+                mkdir -pv "${DOTFILES_DROPBOX_PATH}"
             fi
         fi
 
