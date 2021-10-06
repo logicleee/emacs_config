@@ -46,8 +46,8 @@
 
 ;; BEGIN org-mode config
 (setq org-directory "~/Dropbox/org")
-(setq org-agenda-files '("~/Dropbox/org/"))
-(setq org-agenda-files (quote ("~/Dropbox/org/")))
+(setq org-agenda-files '("~/org/"))
+(setq org-agenda-files (quote ("~/org/")))
 (setq org-archive-location (concat org-directory "/../org-zarchive/.zarchive.org::"))
 (setq org-refile-allow-creating-parent-nodes 'confirm)
 (setq org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))

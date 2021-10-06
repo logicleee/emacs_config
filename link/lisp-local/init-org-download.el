@@ -5,7 +5,7 @@
 
 (require-package 'org-download)
 (require 'org-download)
-(setq-default org-download-image-dir "~/Dropbox/org-media")
+(setq-default org-download-image-dir "~/org/media")
 (setq-default org-download-screenshot-method "screencapture")
 (setq-default org-download-display-inline-images t)
 (setq-default org-download-heading-lvl nil)

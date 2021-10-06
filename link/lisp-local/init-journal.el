@@ -6,7 +6,7 @@
 (defun get-journal-file-today ()
   "Return filename for today's journal entry."
   (let ((daily-name (format-time-string "%Y-%m-%d")))
-    (expand-file-name (concat "~/Dropbox/.org-journal/journal_" daily-name ".org"))))
+    (expand-file-name (concat "~/org/.org-journal/journal_" daily-name ".org"))))
 
 (defun journal-file-today ()
   "Create and load a journal file based on today's date."
