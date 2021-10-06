@@ -16,7 +16,7 @@ if [[ "${DOTFILES_BASE_PATH}" == '' ]]; then
     export DOTFILES_PATH="$DOTFILES_BASE_PATH"
 fi
 
-PLATFORM="$(uname)"
+export PLATFORM="$(uname)"
 
 export DOTFILES_CP_USER_PATH="${DOTFILES_PATH}/copy/user"
 export DOTFILES_CP_USER_COMMON="${DOTFILES_CP_USER_PATH}/common"
@@ -33,15 +33,16 @@ export DOTFILES_LN_SYS_PLATFORM="${DOTFILES_LN_SYS_PATH}/${PLATFORM}"
 export DOTFILES_BASH_PROFILE_PATH="${DOTFILES_LN_USER_PATH}/.bash_profile"
 export DOTFILES_VIM_PATH="${DOTFILES_LN_USER_COMMON}/.vim"
 
-
-
 Ymd_HMS() { date +'%Y%m%d_%H%M%S'; }
 bak_suffix=".bak_$(Ymd_HMS)"
 
 dotfiles_setup() {
+    _dotfiles_set_config_emacs_if_not_set
+
     [[ $DEBUG == 'true' ]] &&
         echo "${FUNCNAME[0]}" &&
         dotfiles_config_show_state
+
     _create_or_append_dotfiles_to_dotfiles_config
     _dotfiles_create_local_git_branch
     dotfiles_link_all
@@ -56,12 +57,14 @@ dotfiles_setup() {
 
 dotfiles_link_all() {
     dotfiles_link_dotfiles
-    dotfiles_link_emacs
+    if [[ "${DOTFILES_CONFIG_EMACS}" == 'true' ]]; then
+        dotfiles_link_emacs
+    fi
 }
 
 _dotfiles_create_local_git_branch() {
-    cd "${DOTFILES_BASE_PATH}" 
-    git checkout -b "${UID}.$(hostname)" 
+    cd "${DOTFILES_BASE_PATH}"
+    git checkout -b "${UID}.$(hostname)"
     cd -
 }
 
@@ -82,6 +85,11 @@ dotfiles_copy_templates() {
 
 dotfiles_link_emacs() {
     dotfiles_config_paths_emacs
+}
+
+_dotfiles_set_config_emacs_if_not_set() {
+    [[ "${DOTFILES_CONFIG_EMACS}" != '' ]] ||
+        export DOTFILES_CONFIG_EMACS='true'
 }
 
 dotfiles_zsh_install_or_update_ohmyzsh() {
@@ -152,7 +160,7 @@ $(grep "includeIf\|path" ~/.gitconfig)
     ~/dotfiles/local/iTerm/
 
 -> A separate branch has been created for this user:
-$(cd "$DOTFILES_BASE_PATH" && git status && cd - ;)
+$(cd "$DOTFILES_BASE_PATH" && git status && cd -)
 
 -> You can also now run the following commands to set user defaults 
 for $(whoami):
