@@ -284,14 +284,14 @@ _dotfiles_link_files() {
     if _platform_is_macOS; then
         cd "${DOTFILES_LN_USER_COMMON}"
         _src=$(pwd)
-        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -p "${HOME}/{}"
-        find . -type f -print0 | xargs -0 -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
+        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
+        find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
         cd -
 
         cd "${DOTFILES_LN_USER_PLATFORM}"
         _src=$(pwd)
-        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -p "${HOME}/{}"
-        find . -type f -print0 | xargs -0 -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
+        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
+        find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
         cd -
     fi
 
@@ -355,7 +355,7 @@ _dotfiles_link_item() {
     _if_exists_move_but_backup_item "$dest"
 
     # link to local file
-    ln -s "$src" "$dest"
+    ln -sv "$src" "$dest"
 
 }
 
@@ -517,7 +517,7 @@ dotfiles_emacs_install_theme_solarized() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_D_SITE_LISP}"
     git submodule add https://github.com/sellout/emacs-color-theme-solarized.git
-    ln -s "${EMACS_D_SITE_LISP}/emacs-color-theme-solarized/solarized-"* \
+    ln -sv "${EMACS_D_SITE_LISP}/emacs-color-theme-solarized/solarized-"* \
         "${EMACS_D_THEMES}/"
     cd -
 }
