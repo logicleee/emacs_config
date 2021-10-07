@@ -48,10 +48,15 @@ dotfiles_emacs_setup() {
 }
 
 dotfiles_link_all() {
-    dotfiles_link_dotfiles
-    if emacs_org_is_cfged; then
-        _dotfiles_calc_and_export_paths_emacs
-        dotfiles_emacs_link_files
+    if dotfiles_is_cfged; then
+        dotfiles_link_dotfiles
+        if emacs_org_is_cfged; then
+            _dotfiles_calc_and_export_paths_emacs
+            dotfiles_emacs_link_files
+        fi
+    else
+        echo "ERROR: ~/.dotfiles_config does not exist! Run dotfiles_setup"
+        return 1
     fi
 }
 
@@ -649,7 +654,5 @@ $(set | grep "THISDIR\|EMACS_\|DOTFILES\|DEBUG\|PLATFORM\|ZSH" | sort)
 
 E0F
 }
-
-_dotfiles_calc_and_export_paths
 
 export SHELL_CFG_LOADED="${SHELL_CFG_LOADED}:${0}"
