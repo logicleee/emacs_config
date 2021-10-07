@@ -4,39 +4,11 @@
 
 [[ "${DEBUG}" != '' ]] || export DEBUG='false'
 
-[[ -e ~/.dotfiles_config ]] && source ~/.dotfiles_config || true
-
-# Ensure one of these is set before proceeding
-[[ "${DOTFILES_BASE_PATH}" != '' ]] ||
-    [[ "${DOTFILES_SCRIPTS_THISDIR}" != '' ]] ||
-    return 100
-
-if [[ "${DOTFILES_BASE_PATH}" == '' ]]; then
-    export DOTFILES_BASE_PATH="$(dirname ${DOTFILES_SCRIPTS_THISDIR})"
-    export DOTFILES_PATH="$DOTFILES_BASE_PATH"
-fi
-
-export PLATFORM="$(uname)"
-
-export DOTFILES_CP_USER_PATH="${DOTFILES_PATH}/copy/user"
-export DOTFILES_CP_USER_COMMON="${DOTFILES_CP_USER_PATH}/common"
-export DOTFILES_CP_USER_PLATFORM="${DOTFILES_CP_USER_PATH}/${PLATFORM}"
-export DOTFILES_CP_SYS_PATH="${DOTFILES_PATH}/copy/system"
-export DOTFILES_CP_SYS_COMMON="${DOTFILES_CP_SYS_PATH}/common"
-export DOTFILES_CP_SYS_PLATFORM="${DOTFILES_CP_SYS_PATH}/${PLATFORM}"
-export DOTFILES_LN_USER_PATH="${DOTFILES_PATH}/link/user"
-export DOTFILES_LN_USER_COMMON="${DOTFILES_LN_USER_PATH}/common"
-export DOTFILES_LN_USER_PLATFORM="${DOTFILES_LN_USER_PATH}/${PLATFORM}"
-export DOTFILES_LN_SYS_PATH="${DOTFILES_PATH}/link/system"
-export DOTFILES_LN_SYS_COMMON="${DOTFILES_LN_SYS_PATH}/common"
-export DOTFILES_LN_SYS_PLATFORM="${DOTFILES_LN_SYS_PATH}/${PLATFORM}"
-export DOTFILES_BASH_PROFILE_PATH="${DOTFILES_LN_USER_PATH}/.bash_profile"
-export DOTFILES_VIM_PATH="${DOTFILES_LN_USER_COMMON}/.vim"
-
 Ymd_HMS() { date +'%Y%m%d_%H%M%S'; }
 bak_suffix=".bak_$(Ymd_HMS)"
 
 dotfiles_setup() {
+    _dotfiles_calc_and_export_paths
     _dotfiles_set_config_emacs_if_not_set
 
     [[ $DEBUG == 'true' ]] &&
@@ -45,8 +17,9 @@ dotfiles_setup() {
 
     _create_or_append_dotfiles_to_dotfiles_config
     _dotfiles_create_local_git_branch
-    dotfiles_link_all
+    dotfiles_link_dotfiles
     dotfiles_copy_templates
+    dotfiles_emacs_setup
     _dotfiles_update_ssh_folder_permissions
     dotfiles_zsh_install_or_update_ohmyzsh
     dotfiles_config_show_state
@@ -55,11 +28,63 @@ dotfiles_setup() {
     #TODO REMOVE COMMENTS
 }
 
+dotfiles_emacs_setup() {
+    dotfiles_config_paths_emacs
+
+    source ~/.dotfiles_config
+    _dotfiles_calc_and_export_paths_emacs
+
+    if [[ "${DOTFILES_CONFIG_EMACS}" == 'true' ]]; then
+        if [ ! -d "${EMACS_D_PATH}" ]; then
+            dotfiles_emacs_install_purcells_config
+            dotfiles_emacs_link_files
+            dotfiles_emacs_install_jade_mode
+            dotfiles_emacs_install_theme_solarized
+            open /Applications/Emacs.app
+        else
+            dotfiles_emacs_update_config
+        fi
+    fi
+}
+
 dotfiles_link_all() {
     dotfiles_link_dotfiles
-    if [[ "${DOTFILES_CONFIG_EMACS}" == 'true' ]]; then
-        dotfiles_link_emacs
+    if emacs_org_is_cfged; then
+        _dotfiles_calc_and_export_paths_emacs
+        dotfiles_emacs_link_files
     fi
+}
+
+_dotfiles_calc_and_export_paths() {
+    [[ -e ~/.dotfiles_config ]] && source ~/.dotfiles_config || true
+
+    # Ensure one of these is set before proceeding
+    [[ "${DOTFILES_BASE_PATH}" != '' ]] ||
+        [[ "${DOTFILES_SCRIPTS_THISDIR}" != '' ]] ||
+        return 100
+
+    if [[ "${DOTFILES_BASE_PATH}" == '' ]]; then
+        export DOTFILES_BASE_PATH="$(dirname ${DOTFILES_SCRIPTS_THISDIR})"
+        export DOTFILES_PATH="$DOTFILES_BASE_PATH"
+    fi
+
+    export PLATFORM="$(uname)"
+    export DOTFILES_CP_USER_PATH="${DOTFILES_PATH}/copy/user"
+    export DOTFILES_CP_USER_COMMON="${DOTFILES_CP_USER_PATH}/common"
+    export DOTFILES_CP_USER_PLATFORM="${DOTFILES_CP_USER_PATH}/${PLATFORM}"
+    export DOTFILES_CP_SYS_PATH="${DOTFILES_PATH}/copy/system"
+    export DOTFILES_CP_SYS_COMMON="${DOTFILES_CP_SYS_PATH}/common"
+    export DOTFILES_CP_SYS_PLATFORM="${DOTFILES_CP_SYS_PATH}/${PLATFORM}"
+    export DOTFILES_LN_USER_PATH="${DOTFILES_PATH}/link/user"
+    export DOTFILES_LN_USER_COMMON="${DOTFILES_LN_USER_PATH}/common"
+    export DOTFILES_LN_USER_PLATFORM="${DOTFILES_LN_USER_PATH}/${PLATFORM}"
+    export DOTFILES_LN_SYS_PATH="${DOTFILES_PATH}/link/system"
+    export DOTFILES_LN_SYS_COMMON="${DOTFILES_LN_SYS_PATH}/common"
+    export DOTFILES_LN_SYS_PLATFORM="${DOTFILES_LN_SYS_PATH}/${PLATFORM}"
+    export DOTFILES_BASH_PROFILE_PATH="${DOTFILES_LN_USER_PATH}/.bash_profile"
+    export DOTFILES_VIM_PATH="${DOTFILES_LN_USER_COMMON}/.vim"
+
+    [[ "${DEBUG}" == 'true' ]] && dotfiles_config_show_state
 }
 
 _dotfiles_create_local_git_branch() {
@@ -85,6 +110,7 @@ dotfiles_copy_templates() {
 
 dotfiles_link_emacs() {
     dotfiles_config_paths_emacs
+    dotfiles_emacs_link_files
 }
 
 _dotfiles_set_config_emacs_if_not_set() {
@@ -475,7 +501,7 @@ dotfiles_git_submodule_add_emacs_config() {
 
 dotfiles_emacs_install_purcells_config() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
-    cd "${EMACS_LINK_PATH}/"
+    cd "${EMACS_CONFIG_REPO_PATH}/"
     git submodule add https://github.com/purcell/emacs.d.git .emacs.d
     cd -
 }
@@ -498,7 +524,7 @@ dotfiles_emacs_install_theme_solarized() {
 
 dotfiles_emacs_update_config() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
-    cd "${EMACS_LINK_PATH}/"
+    cd "${EMACS_CONFIG_REPO_PATH}/"
     git pull
     cd -
 }
@@ -575,6 +601,37 @@ dotfiles_config_paths_emacs() {
     fi
 }
 
+_dotfiles_calc_and_export_paths_emacs() {
+    export EMACS_CONFIG_REPO_PATH="$(dirname ${EMACS_D_PATH})"
+    export EMACS_CONFIG_PATH="$(dirname ${EMACS_CONFIG_REPO_PATH})"
+    export EMACS_D_SITE_LISP="${EMACS_D_PATH}/site-lisp"
+    export EMACS_D_LISP_LOCAL="${EMACS_CONFIG_REPO_PATH}/lisp-local"
+    export EMACS_D_THEMES="${EMACS_D_PATH}/themes"
+    export EMACS_SETUP_DONE_FLAG="${EMACS_CONFIG_PATH}/EMACS_SETUP_DONE.FLAG"
+    [[ "${DEBUG}" == 'true' ]] && dotfiles_config_show_state
+}
+
+dotfiles_sync_emacs_scripts() {
+    if [[ "${EMACS_CFG_DEV_PATH}" == '' ]] || [[ "${DOTFILES_DEV_PATH}" == '' ]]; then
+        cat <<E000F
+    ERROR: These paths must to point to base path for local repos:
+        export EMACS_CFG_DEV_PATH="$EMACS_CFG_DEV_PATH"
+        export DOTFILES_DEV_PATH="$DOTFILES_DEV_PATH"
+E000F
+        return 42
+    fi
+    cp -pv "${DOTFILES_DEV_PATH}/link/user/.lib/dotfiles-utils.lib.sh" \
+        "${EMACS_CFG_DEV_PATH}/lib/" &&
+        cp -pv "${DOTFILES_DEV_PATH}/scripts/dotfiles-usr-82-cfg-emacs.sh" \
+            "${EMACS_CFG_DEV_PATH}/scripts"
+    cd "${EMACS_CFG_DEV_PATH}" &&
+        git checkout main &&
+        git pull &&
+        git commit -am'sync from dotfiles' &&
+        git push &&
+        cd -
+}
+
 dotfiles_config_show_state() {
     [[ -e ~/.dotfiles_config ]] ||
         echo "  ##### ~/.dotfiles_config DOES NOT EXIST #####"
@@ -591,5 +648,7 @@ $(set | grep "THISDIR\|EMACS_\|DOTFILES\|DEBUG\|PLATFORM\|ZSH" | sort)
 
 E0F
 }
+
+_dotfiles_calc_and_export_paths
 
 export SHELL_CFG_LOADED="${SHELL_CFG_LOADED}:${0}"
