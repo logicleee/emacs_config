@@ -627,9 +627,10 @@ E000F
     cd "${EMACS_CFG_DEV_PATH}" &&
         git checkout main &&
         git pull &&
+        git status &&
         git commit -am'sync from dotfiles' &&
-        git push &&
-        cd -
+        git push
+    cd -
 }
 
 dotfiles_config_show_state() {
