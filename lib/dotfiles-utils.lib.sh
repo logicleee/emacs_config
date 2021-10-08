@@ -25,7 +25,6 @@ dotfiles_setup() {
     dotfiles_config_show_state
     _dotfiles_ssh_key_github_hints
     dotfiles_post_setup_message
-    #TODO REMOVE COMMENTS
 }
 
 dotfiles_emacs_setup() {
@@ -55,7 +54,7 @@ dotfiles_link_all() {
             dotfiles_emacs_link_files
         fi
     else
-        echo "ERROR: ~/.dotfiles_config does not exist! Run dotfiles_setup"
+        echo "ERROR: ~/.dotfiles_config does not exist or is invalid! Run dotfiles_setup"
         return 1
     fi
 }
@@ -92,19 +91,16 @@ _dotfiles_calc_and_export_paths() {
     [[ "${DEBUG}" == 'true' ]] && dotfiles_config_show_state
 }
 
+dotfiles_link_dotfiles() {
+    _dotfiles_create_dotfiles_paths
+    _dotfiles_create_home_folders
+    _dotfiles_link_files
+}
+
 _dotfiles_create_local_git_branch() {
     cd "${DOTFILES_BASE_PATH}"
     git checkout -b "${UID}.$(hostname)"
     cd -
-}
-
-dotfiles_link_dotfiles() {
-    _dotfiles_create_dotfiles_paths
-    _dotfiles_create_home_folders
-    _dotfiles_link_folders
-    _dotfiles_link_handle_base_files
-    _dotfiles_link_handle_bash_profile
-    _dotfiles_link_files
 }
 
 dotfiles_copy_templates() {
@@ -218,7 +214,6 @@ _dotfiles_create_home_folders() {
         local _dir="${HOME}/${_d}"
         [[ -d "${_dir}" ]] || mkdir -p "${_dir}"
     done
-
 }
 
 _dotfiles_create_dotfiles_paths() {
@@ -284,33 +279,15 @@ _dotfiles_link_handle_bash_profile() {
 }
 
 _dotfiles_link_files() {
-    #find . -iname "pattern" -print0 | xargs -0 -I mv {} ~/.Trash/
-    local _src
-    _find_files_create_links "${DOTFILES_LN_USER_COMMON}"
-    _find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
-    #if _platform_is_macOS; then
-    #_find_files_create_links "${DOTFILES_LN_USER_COMMON}"
-    #_find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
-    #fi
-
-    #if _platform_is_linux; then
-    #_find_files_create_links "${DOTFILES_LN_USER_COMMON}"
-    #_find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
-    ##cd "${DOTFILES_LN_USER_COMMON}"
-    ##_src=$(pwd)
-    ##find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
-    ##find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
-    ##cd -
-
-    ##cd "${DOTFILES_LN_USER_PLATFORM}"
-    ##_src=$(pwd)
-    ##find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
-    ##find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
-    ##cd -
-    #fi
+    _dotfiles_link_folders
+    _dotfiles_link_handle_base_files
+    _dotfiles_link_handle_bash_profile
+    _find_files_and_create_links "${DOTFILES_LN_USER_COMMON}"
+    _find_files_and_create_links "${DOTFILES_LN_USER_PLATFORM}"
 }
 
-_find_files_create_links() {
+_find_files_and_create_links() {
+    local _src
     cd "${1}"
     _src=$(pwd)
     #find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
