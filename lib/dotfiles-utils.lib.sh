@@ -286,33 +286,46 @@ _dotfiles_link_handle_bash_profile() {
 _dotfiles_link_files() {
     #find . -iname "pattern" -print0 | xargs -0 -I mv {} ~/.Trash/
     local _src
-    if _platform_is_macOS; then
-        cd "${DOTFILES_LN_USER_COMMON}"
-        _src=$(pwd)
-        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
-        find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
-        cd -
+    _find_files_create_links "${DOTFILES_LN_USER_COMMON}"
+    _find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
+    #if _platform_is_macOS; then
+    #_find_files_create_links "${DOTFILES_LN_USER_COMMON}"
+    #_find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
+    #fi
 
-        cd "${DOTFILES_LN_USER_PLATFORM}"
-        _src=$(pwd)
-        find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
-        find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
-        cd -
-    fi
+    #if _platform_is_linux; then
+    #_find_files_create_links "${DOTFILES_LN_USER_COMMON}"
+    #_find_files_create_links "${DOTFILES_LN_USER_PLATFORM}"
+    ##cd "${DOTFILES_LN_USER_COMMON}"
+    ##_src=$(pwd)
+    ##find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
+    ##find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
+    ##cd -
 
-    if _platform_is_linux; then
-        cd "${DOTFILES_LN_USER_COMMON}"
-        _src=$(pwd)
-        find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
-        find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
-        cd -
+    ##cd "${DOTFILES_LN_USER_PLATFORM}"
+    ##_src=$(pwd)
+    ##find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
+    ##find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
+    ##cd -
+    #fi
+}
 
-        cd "${DOTFILES_LN_USER_PLATFORM}"
-        _src=$(pwd)
-        find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
-        find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
-        cd -
-    fi
+_find_files_create_links() {
+    cd "${1}"
+    _src=$(pwd)
+    #find . -type d -print0 | xargs -0 -n1 -I{} mkdir -pv "${HOME}/{}"
+    #find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
+    find . -type d |
+        while IFS= read _f; do
+            mkdir -pv "${HOME}/${_f}"
+        done
+    #find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
+    #find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
+    find . -type f |
+        while IFS= read _f; do
+            _dotfiles_link_item "${_src}/${_f/\.\//}" "${HOME}/${_f}"
+        done
+    cd -
 }
 
 dotfiles_move_file_to_links() {
