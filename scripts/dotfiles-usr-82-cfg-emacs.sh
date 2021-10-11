@@ -14,6 +14,8 @@ export EMACS_CONFIG_THISDIR="$(dirname ${THISDIR})"
 
 export DOTFILES_CONFIG_EMACS='true'
 
+export EMACS_ORG_SYNC_VIA="${EMACS_ORG_SYNC_VIA:-none}"
+
 source "${EMACS_CONFIG_THISDIR}/lib/dotfiles-utils.lib.sh"
 
 dotfiles_emacs_setup

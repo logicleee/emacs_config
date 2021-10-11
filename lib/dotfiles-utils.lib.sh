@@ -9,7 +9,7 @@ bak_suffix=".bak_$(Ymd_HMS)"
 
 dotfiles_setup() {
     _dotfiles_calc_and_export_paths
-    _dotfiles_set_config_emacs_if_not_set
+    _dotfiles_check_config_emacs
 
     [[ $DEBUG == 'true' ]] &&
         echo "${FUNCNAME[0]}" &&
@@ -114,9 +114,11 @@ dotfiles_link_emacs() {
     dotfiles_emacs_link_files
 }
 
-_dotfiles_set_config_emacs_if_not_set() {
-    [[ "${DOTFILES_CONFIG_EMACS}" != '' ]] ||
-        export DOTFILES_CONFIG_EMACS='true'
+_dotfiles_check_config_emacs() {
+    local _dfbp="${DOTFILES_BASE_PATH}/emacs_config"
+    export DOTFILES_CONFIG_EMACS="${DOTFILES_CONFIG_EMACS:-true}"
+    export EMACS_CONFIG_THISDIR="${EMACS_CONFIG_THISDIR:-${_dfbp}}"
+    export EMACS_ORG_SYNC_VIA="${EMACS_ORG_SYNC_VIA:-none}"
 }
 
 dotfiles_zsh_install_or_update_ohmyzsh() {
@@ -339,7 +341,7 @@ dotfiles_move_file_to_links() {
     [[ "${DOTFILES_LN_USER_COMMON}" != '' ]] ||
         log_err "DOTFILES_LN_USER_COMMON not set to base destination path!" ||
         return 4
-        
+
     local _filename="$(basename ${1})"
     local _srcpath="$(get_path ${1})"
     local _dest_base_path="${DOTFILES_LN_USER_COMMON}"
@@ -479,7 +481,7 @@ dropbox_is_cfged() { grep DOTFILES_DROPBOX_PATH ~/.dotfiles_config >/dev/null 2>
 
 _dropbox_path_exists() { [[ -d ~/Dropbox ]]; }
 
-_dropbox_path_env_is_set () { [[ "${DOTFILES_DROPBOX_PATH}" != '' ]]; }
+_dropbox_path_env_is_set() { [[ "${DOTFILES_DROPBOX_PATH}" != '' ]]; }
 
 gdrive_is_cfged() { grep DOTFILES_GDRIVE_PATH ~/.dotfiles_config >/dev/null 2>&1; }
 
@@ -496,25 +498,36 @@ emacsd_path_is_ok() {
 }
 
 _append_vim_to_dotfiles_config() {
-    echo "export DOTFILES_VIM_PATH=${DOTFILES_VIM_PATH}" >>~/.dotfiles_config
+    local _default="${DOTFILES_LN_USER_COMMON}/.vim"
+    if ! vim_is_cfged; then
+        export DOTFILES_VIM_PATH="${DOTFILES_VIM_PATH:-${_default}}"
+        echo "export DOTFILES_VIM_PATH=${DOTFILES_VIM_PATH}" >> \
+            ~/.dotfiles_config
+    fi
 }
 
 _append_dropbox_to_dotfiles_config() {
-    echo "export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH}" >>~/.dotfiles_config
+    local _default="${HOME}/Dropbox"
+    if ! dropbox_is_cfged; then
+        export DOTFILES_DROPBOX_PATH="${DOTFILES_DROPBOX_PATH:-${_default}}"
+        echo "export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH}" >> \
+            ~/.dotfiles_config
+    fi
 }
 
 _append_gdrive_to_dotfiles_config() {
-    echo "export DOTFILES_GDRIVE_PATH=${DOTFILES_GDRIVE_PATH}" >>~/.dotfiles_config
+    local _default="${HOME}/Google Drive"
+    if ! gdrive_is_cfged; then
+        export DOTFILES_GDRIVE_PATH="${DOTFILES_GDRIVE_PATH:-${_default}}"
+        echo "export DOTFILES_GDRIVE_PATH=${DOTFILES_GDRIVE_PATH}" >> \
+            ~/.dotfiles_config
+    fi
 }
 
 _create_or_append_dotfiles_to_dotfiles_config() {
-    if ! dropbox_is_cfged; then
-        export DOTFILES_DROPBOX_PATH="${HOME}/Dropbox"
-    fi
-
-    if ! gdrive_is_cfged; then
-        export DOTFILES_GDRIVE_PATH="${HOME}/Google Drive"
-    fi
+    [[ ! -e ~/.dotfiles_config.tmp ]] ||
+        rm ~/.dotfiles_config.tmp ||
+        return 4
 
     if ! dotfiles_is_cfged; then
         if [[ -e ~/.dotfiles_config ]]; then
@@ -525,14 +538,17 @@ _create_or_append_dotfiles_to_dotfiles_config() {
 #  $ source ~/.lib/dotfiles-utils.lib.sh; dotfiles_link_all
 export DOTFILES_BASE_PATH=${DOTFILES_BASE_PATH}
 export DOTFILES_PATH=${DOTFILES_PATH}
-export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH}
-export DOTFILES_GDRIVE_PATH="${DOTFILES_GDRIVE_PATH}"
 E00F
+
+        _append_vim_to_dotfiles_config
+        _append_dropbox_to_dotfiles_config
+        _append_gdrive_to_dotfiles_config
 
         if [[ -e ~/.dotfiles_config.tmp ]]; then
             cat ~/.dotfiles_config.tmp >>~/.dotfiles_config || return 3
             rm ~/.dotfiles_config.tmp || return 4
         fi
+
         return 0
     fi
 }
@@ -540,8 +556,12 @@ E00F
 _append_to_dotfiles_config_emacs() {
     echo "export EMACS_D_PATH=${EMACS_D_PATH}" >>~/.dotfiles_config
     echo "export EMACS_ORG_PATH=${EMACS_ORG_PATH}" >>~/.dotfiles_config
-    echo "export EMACS_ORG_ARCHIVE_PATH=${EMACS_ORG_ARCHIVE_PATH}" >>~/.dotfiles_config
-    echo "export EMACS_ORG_MEDIA_PATH=${EMACS_ORG_MEDIA_PATH}" >>~/.dotfiles_config
+    echo "export EMACS_ORG_ARCHIVE_PATH=${EMACS_ORG_ARCHIVE_PATH}" >> \
+        ~/.dotfiles_config
+    echo "export EMACS_ORG_MEDIA_PATH=${EMACS_ORG_MEDIA_PATH}" >> \
+        ~/.dotfiles_config
+    echo "export EMACS_ORG_TEMPLATES_PATH=${EMACS_ORG_TEMPLATES_PATH}" >> \
+        ~/.dotfiles_config
 
 }
 
@@ -606,6 +626,14 @@ dotfiles_emacs_link_files() {
     _dotfiles_link_item "${EMACS_ORG_ARCHIVE_PATH}" "${HOME}/org/zarchive"
 }
 
+_create_dropbox_path() {
+    if dropbox_is_cfged; then
+        if ! _dropbox_path_exists; then
+            mkdir -pv "${DOTFILES_DROPBOX_PATH}"
+        fi
+    fi
+}
+
 dotfiles_config_paths_emacs() {
     export CFG_EXISTS='false'
     export CFG_UPDATED='false'
@@ -615,26 +643,26 @@ dotfiles_config_paths_emacs() {
     [[ -e ~/.dotfiles_config ]] && export CFG_EXISTS='true'
 
     if ! emacs_org_is_cfged; then
-        if dropbox_is_cfged; then
-            if ! _dropbox_path_exists; then
-                mkdir -pv "${DOTFILES_DROPBOX_PATH}"
-            fi
-        fi
-
-        if _dropbox_path_exists || _dropbox_path_env_is_set; then
-            if ! dropbox_is_cfged; then
-                export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH:-${HOME}/Dropbox}
-                _append_dropbox_to_dotfiles_config
-            fi
-            export EMACS_ORG_PATH="${DOTFILES_DROPBOX_PATH}/org"
-            export EMACS_ORG_ARCHIVE_PATH="${DOTFILES_DROPBOX_PATH}/org-zarchive"
-            export EMACS_ORG_MEDIA_PATH="${DOTFILES_DROPBOX_PATH}/org-media"
-        else
+        case "$EMACS_ORG_SYNC_VIA" in
+        dropbox)
+            export EMACS_ORG_BASE_PATH="${DOTFILES_DROPBOX_PATH}"
+            _append_dropbox_to_dotfiles_config
+            break
+            ;;
+        gdrive)
+            export EMACS_ORG_BASE_PATH="${DOTFILES_GDRIVE_PATH}"
+            _append_gdrive_to_dotfiles_config
+            break
+            ;;
+        none) ;;
+        *)
             export EMACS_ORG_BASE_PATH="${EMACS_ORG_BASE_PATH:-${HOME}}"
-            export EMACS_ORG_PATH="${EMACS_ORG_BASE_PATH}/org"
-            export EMACS_ORG_ARCHIVE_PATH="${EMACS_ORG_BASE_PATH}/org-zarchive"
-            export EMACS_ORG_MEDIA_PATH="${EMACS_ORG_BASE_PATH}/org-media"
-        fi
+            ;;
+        esac
+
+        export EMACS_ORG_PATH="${EMACS_ORG_BASE_PATH}/org"
+        export EMACS_ORG_ARCHIVE_PATH="${EMACS_ORG_BASE_PATH}/org-zarchive"
+        export EMACS_ORG_MEDIA_PATH="${EMACS_ORG_BASE_PATH}/org-media"
 
         if dotfiles_is_cfged && ! emacsd_path_is_ok; then
             # NOTE: This is the ONLY place that should reference DOTFILES_PATH
