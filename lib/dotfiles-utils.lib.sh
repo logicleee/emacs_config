@@ -501,7 +501,7 @@ _append_vim_to_dotfiles_config() {
     local _default="${DOTFILES_LN_USER_COMMON}/.vim"
     if ! vim_is_cfged; then
         export DOTFILES_VIM_PATH="${DOTFILES_VIM_PATH:-${_default}}"
-        echo "export DOTFILES_VIM_PATH=${DOTFILES_VIM_PATH}" >> \
+        echo "export DOTFILES_VIM_PATH=\"${DOTFILES_VIM_PATH}\"" >> \
             ~/.dotfiles_config
     fi
 }
@@ -519,7 +519,7 @@ _append_gdrive_to_dotfiles_config() {
     local _default="${HOME}/Google Drive"
     if ! gdrive_is_cfged; then
         export DOTFILES_GDRIVE_PATH="${DOTFILES_GDRIVE_PATH:-${_default}}"
-        echo "export DOTFILES_GDRIVE_PATH=\'${DOTFILES_GDRIVE_PATH}\'" >> \
+        echo "export DOTFILES_GDRIVE_PATH=\"${DOTFILES_GDRIVE_PATH}\"" >> \
             ~/.dotfiles_config
     fi
 }
@@ -555,12 +555,12 @@ E00F
 
 _append_to_dotfiles_config_emacs() {
     echo "export EMACS_D_PATH=${EMACS_D_PATH}" >>~/.dotfiles_config
-    echo "export EMACS_ORG_PATH=${EMACS_ORG_PATH}" >>~/.dotfiles_config
-    echo "export EMACS_ORG_ARCHIVE_PATH=${EMACS_ORG_ARCHIVE_PATH}" >> \
+    echo "export EMACS_ORG_PATH=\"${EMACS_ORG_PATH}\"" >>~/.dotfiles_config
+    echo "export EMACS_ORG_ARCHIVE_PATH=\"${EMACS_ORG_ARCHIVE_PATH}\"" >> \
         ~/.dotfiles_config
-    echo "export EMACS_ORG_MEDIA_PATH=${EMACS_ORG_MEDIA_PATH}" >> \
+    echo "export EMACS_ORG_MEDIA_PATH=\"${EMACS_ORG_MEDIA_PATH}\"" >> \
         ~/.dotfiles_config
-    echo "export EMACS_ORG_TEMPLATES_PATH=${EMACS_ORG_TEMPLATES_PATH}" >> \
+    echo "export EMACS_ORG_TEMPLATES_PATH=\"${EMACS_ORG_TEMPLATES_PATH}\"" >> \
         ~/.dotfiles_config
 
 }
