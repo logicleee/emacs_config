@@ -519,7 +519,7 @@ _append_gdrive_to_dotfiles_config() {
     local _default="${HOME}/Google Drive"
     if ! gdrive_is_cfged; then
         export DOTFILES_GDRIVE_PATH="${DOTFILES_GDRIVE_PATH:-${_default}}"
-        echo "export DOTFILES_GDRIVE_PATH=${DOTFILES_GDRIVE_PATH}" >> \
+        echo "export DOTFILES_GDRIVE_PATH=\'${DOTFILES_GDRIVE_PATH}\'" >> \
             ~/.dotfiles_config
     fi
 }
