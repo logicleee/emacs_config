@@ -199,6 +199,19 @@ for $(whoami):
 EOF
 }
 
+confirm() {
+    local response
+    local question=${1:-"Continue?"}
+    while true; do
+        read -p "$question (y/n/q): " response
+        [[ $response =~ ^[Yy]$ ]] && return 0
+        [[ $response =~ ^[Nn]$ ]] && return 1
+        [[ $response =~ ^[Qq]$ ]] && exit 100
+        echo "  Invalid response: $response"
+    done
+    return 2
+}
+
 _platform_is_linux() { [[ "$(uname)" == 'Linux' ]]; }
 
 _platform_is_macOS() { [[ "$(uname)" == 'Darwin' ]]; }
@@ -305,22 +318,65 @@ _find_files_and_create_links() {
     cd -
 }
 
+get_path() { printf "%s" "$(cd "$(dirname "${1}")" && pwd)"; }
+
+log_info() {
+    local _tags="${FUNCNAME[1]:-${funcstack[-1]:-undefined}} INFO:"
+    printf "%s %s\n" "$_tags" "${1}"
+    return 0
+}
+
+log_err() {
+    local _tags="${FUNCNAME[1]:-${funcstack[-1]:-undefined}} ERROR:"
+    printf "%s %s\n" "$_tags" "${1}"
+    return 1
+}
+
 dotfiles_move_file_to_links() {
-    [[ -f "${1}" ]] || return 1
+    [[ $# -eq 1 ]] || log_err "Too many arguments." || return 1
+    [[ -L "${1}" ]] || log_err "Argument is a link already." || return 2
+    [[ -f "${1}" ]] || log_err "Argument not a file." || return 3
+    [[ "${DOTFILES_LN_USER_COMMON}" != '' ]] ||
+        log_err "DOTFILES_LN_USER_COMMON not set to base destination path!" ||
+        return 4
+        
     local _filename="$(basename ${1})"
-    local _path="$(dirname ${1})"
-    local _destpath=""
-    local _src=""
-    local _dest=""
-    #TODO sort out usecase where not in ~/
-    # Handle: dotfiles_move_file_to_links .emacs.d/init-something.el
-    # Handle: dotfiles_move_file_to_links ~/.emacs.d/init-something.el
-    # Handle: dotfiles_move_file_to_links init-something.el
-    ##[[ -d "$_destpath" ]] ||
-    ## mkdir -pv "${_destpath}"
-    ##[[ -d "$_destpath" ]] &&
-    ## mv -v "${_src}" "${_dest}/" &&
-    ## _dotfiles_link_item "${_dest}" "${_src}"
+    local _srcpath="$(get_path ${1})"
+    local _dest_base_path="${DOTFILES_LN_USER_COMMON}"
+    local _src="${_srcpath}/${_filename}"
+    local _dest="${_src/${HOME}/${_dest_base_path}}"
+    local _destpath="$(dirname ${_dest})"
+
+    [[ -f "${_src}" ]] || return 5
+    cat <<E000f
+
+######################################################################
+  DOTFILES_LN_USER_COMMON is set to the path:
+
+    ${DOTFILES_LN_USER_COMMON}
+      
+
+  The following commands will be executed:
+
+    mkdir -p $_destpath
+
+    mv -v $_src $_dest
+
+    ln -sv $_dest $_src 
+######################################################################
+
+E000f
+
+    printf "  => OK to proceed? (y/n): "
+    read response
+    [[ $response =~ ^[Yy]$ ]] || log_err "Aborting..." || return 1
+
+    [[ -d "${_destpath}" ]] ||
+        mkdir -p "${_destpath}"
+
+    [[ -d "${_destpath}" ]] &&
+        mv -pv "${_src}" "${_dest}" &&
+        _dotfiles_link_item "${_dest}" "${_src}"
 }
 
 _dotfiles_update_ssh_folder_permissions() {
@@ -344,7 +400,7 @@ _dotfiles_link_item() {
     fi
 
     # test arg 2 is link - remove
-    _if_link_exists_remove_it "$dest"
+    _if_link_exists_remove_link "$dest"
 
     # test arg 2 exists - append name .bak_Ymd_HMS
     _if_exists_move_but_backup_item "$dest"
@@ -354,25 +410,25 @@ _dotfiles_link_item() {
 
 }
 
-_if_link_exists_remove_it() {
+_if_link_exists_remove_link() {
     if [[ "$#" -ne 1 ]]; then
-        echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
+        echo "ERROR: ${FUNCNAME[0]} expected 1 argument but received $#"
         return 1
     fi
-    if [[ -L "$1" ]]; then rm -v "$1"; fi
+    if [[ -L "$1" ]]; then rm -v "${1}"; fi
 }
 
 _if_exists_move_but_backup_item() {
     if [[ "$#" -ne 1 ]]; then
-        echo "ERROR: ${FUNCNAME[0]} expected 1 arguments but received $#"
+        echo "ERROR: ${FUNCNAME[0]} expected 1 argument but received $#"
         return 1
     fi
 
     local src="$1"
     local dest="${1}${bak_suffix:-.bak}"
 
-    if [[ -e "$src" ]]; then
-        mv "$src" "$dest"
+    if [[ -e "${src}" ]]; then
+        mv -v "${src}" "${dest}"
         return $?
     fi
     return 0
@@ -421,7 +477,9 @@ emacs_org_is_cfged() { grep EMACS_ORG ~/.dotfiles_config >/dev/null 2>&1; }
 
 dropbox_is_cfged() { grep DOTFILES_DROPBOX_PATH ~/.dotfiles_config >/dev/null 2>&1; }
 
-dropbox_path_exists() { [[ -d ~/Dropbox ]]; }
+_dropbox_path_exists() { [[ -d ~/Dropbox ]]; }
+
+_dropbox_path_env_is_set () { [[ "${DOTFILES_DROPBOX_PATH}" != '' ]]; }
 
 gdrive_is_cfged() { grep DOTFILES_GDRIVE_PATH ~/.dotfiles_config >/dev/null 2>&1; }
 
@@ -558,23 +616,24 @@ dotfiles_config_paths_emacs() {
 
     if ! emacs_org_is_cfged; then
         if dropbox_is_cfged; then
-            if ! dropbox_path_exists; then
+            if ! _dropbox_path_exists; then
                 mkdir -pv "${DOTFILES_DROPBOX_PATH}"
             fi
         fi
 
-        if dropbox_path_exists; then
+        if _dropbox_path_exists || _dropbox_path_env_is_set; then
             if ! dropbox_is_cfged; then
-                export DOTFILES_DROPBOX_PATH=${HOME}/Dropbox
+                export DOTFILES_DROPBOX_PATH=${DOTFILES_DROPBOX_PATH:-${HOME}/Dropbox}
                 _append_dropbox_to_dotfiles_config
             fi
             export EMACS_ORG_PATH="${DOTFILES_DROPBOX_PATH}/org"
             export EMACS_ORG_ARCHIVE_PATH="${DOTFILES_DROPBOX_PATH}/org-zarchive"
             export EMACS_ORG_MEDIA_PATH="${DOTFILES_DROPBOX_PATH}/org-media"
         else
-            export EMACS_ORG_PATH="${HOME}/org"
-            export EMACS_ORG_ARCHIVE_PATH="${HOME}/org-zarchive"
-            export EMACS_ORG_MEDIA_PATH="${HOME}/org-media"
+            export EMACS_ORG_BASE_PATH="${EMACS_ORG_BASE_PATH:-${HOME}}"
+            export EMACS_ORG_PATH="${EMACS_ORG_BASE_PATH}/org"
+            export EMACS_ORG_ARCHIVE_PATH="${EMACS_ORG_BASE_PATH}/org-zarchive"
+            export EMACS_ORG_MEDIA_PATH="${EMACS_ORG_BASE_PATH}/org-media"
         fi
 
         if dotfiles_is_cfged && ! emacsd_path_is_ok; then
