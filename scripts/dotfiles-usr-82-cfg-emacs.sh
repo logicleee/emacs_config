@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-[[ "${DEBUG}" != '' ]] || export DEBUG='false'
-
-# Uncomment as needed
-export DEBUG='true'
+# Uncomment or export before running
+#export DEBUG='true'
+export DEBUG=${DEBUG:-false}
 
 set -e
 [[ "${DEBUG}" != 'true' ]] || set -x

@@ -2,7 +2,7 @@
 
 #open -a "Terminal" ~/path/to/script.sh
 
-[[ "${DEBUG}" != '' ]] || export DEBUG='false'
+export DEBUG=${DEBUG:-false}
 
 Ymd_HMS() { date +'%Y%m%d_%H%M%S'; }
 bak_suffix=".bak_$(Ymd_HMS)"
