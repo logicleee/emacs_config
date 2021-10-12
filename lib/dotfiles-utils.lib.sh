@@ -98,8 +98,10 @@ dotfiles_link_dotfiles() {
 }
 
 _dotfiles_create_local_git_branch() {
+    local _branch="${UID}.$(hostname)"
     cd "${DOTFILES_BASE_PATH}"
-    git checkout -b "${UID}.$(hostname)"
+    git rev-parse --verify --quiet "${_branch}" >/dev/null ||
+        git checkout -b "${_branch}"
     cd -
 }
 
@@ -568,29 +570,33 @@ _append_to_dotfiles_config_emacs() {
 dotfiles_git_submodule_add_emacs_config() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${DOTFILES_PATH}" &&
-        git submodule add https://github.com/logicleee/emacs_config.git &&
-        cd -
+        [[ -d "emacs_config" ]] ||
+        git submodule add https://github.com/logicleee/emacs_config.git
+    cd -
 }
 
 dotfiles_emacs_install_purcells_config() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_CONFIG_REPO_PATH}/"
-    git submodule add https://github.com/purcell/emacs.d.git .emacs.d
+    [[ -d ".emacs.d" ]] ||
+        git submodule add https://github.com/purcell/emacs.d.git .emacs.d
     cd -
 }
 
 dotfiles_emacs_install_jade_mode() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_D_SITE_LISP}"
-    git submodule add https://github.com/brianc/jade-mode.git
+    [[ -d "jade-mode" ]] ||
+        git submodule add https://github.com/brianc/jade-mode.git
     cd -
 }
 
 dotfiles_emacs_install_theme_solarized() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_D_SITE_LISP}"
-    git submodule add https://github.com/sellout/emacs-color-theme-solarized.git
-    ln -sv "${EMACS_D_SITE_LISP}/emacs-color-theme-solarized/solarized-"* \
+    [[ -d "emacs-color-theme-solarized" ]] ||
+        git submodule add https://github.com/sellout/emacs-color-theme-solarized.git
+    ln -svf "${EMACS_D_SITE_LISP}/emacs-color-theme-solarized/solarized-"* \
         "${EMACS_D_THEMES}/"
     cd -
 }
