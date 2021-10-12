@@ -102,6 +102,7 @@ _dotfiles_create_local_git_branch() {
     cd "${DOTFILES_BASE_PATH}"
     git rev-parse --verify --quiet "${_branch}" >/dev/null ||
         git checkout -b "${_branch}"
+    git checkout "${_branch}"
     cd -
 }
 
