@@ -233,8 +233,7 @@ _dotfiles_create_home_folders() {
 
     for _d in ${dotfiles_folders[@]}; do
         local _dir="${HOME}/${_d}"
-        [[ ! -L "${_dir}" ]] || rm "${_dir}"
-        [[ -d "${_dir}" ]] || mkdir -p "${_dir}"
+        _mkdir_if_needed "${_dir}"
     done
 }
 
@@ -251,8 +250,7 @@ _dotfiles_create_dotfiles_paths() {
     )
 
     for _d in ${_dirs[@]}; do
-        [[ ! -L "${_d}" ]] || rm "${_d}"
-        [[ -d "${_d}" ]] || mkdir -p "${_d}"
+        _mkdir_if_needed "${_d}"
     done
 
 }
@@ -309,6 +307,11 @@ _dotfiles_link_files() {
     _find_files_and_create_links "${DOTFILES_LN_USER_PLATFORM}"
 }
 
+_mkdir_if_needed() {
+    [[ ! -L "${1}" ]] || rm "${1}"
+    [[ -d "${1}" ]] || mkdir -pv "${1}"
+}
+
 _find_files_and_create_links() {
     local _src
     cd "${1}"
@@ -317,7 +320,7 @@ _find_files_and_create_links() {
     #find . -type d -printf "%P\n" | awk 'NF' | xargs -n1 -I{} mkdir -p "${HOME}/{}"
     find . -type d |
         while IFS= read _f; do
-            mkdir -pv "${HOME}/${_f}"
+            _mkdir_if_needed "${HOME}/${_f}"
         done
     #find . -type f -print0 | xargs -0 -n1 -I{} ln -sfv "${_src}/{}" "${HOME}/{}"
     #find . -type f -printf "%P\n" | xargs -n1 -I{} ln -sf "${_src}/{}" "${HOME}/{}"
@@ -382,7 +385,7 @@ E000f
     [[ $response =~ ^[Yy]$ ]] || log_err "Aborting..." || return 1
 
     [[ -d "${_destpath}" ]] ||
-        mkdir -p "${_destpath}"
+        mkdir -pv "${_destpath}"
 
     [[ -d "${_destpath}" ]] &&
         mv -pv "${_src}" "${_dest}" &&
@@ -644,7 +647,7 @@ dotfiles_emacs_link_files() {
 _create_dropbox_path() {
     if dropbox_is_cfged; then
         if ! _dropbox_path_exists; then
-            mkdir -pv "${DOTFILES_DROPBOX_PATH}"
+            _mkdir_if_needed "${DOTFILES_DROPBOX_PATH}"
         fi
     fi
 }
