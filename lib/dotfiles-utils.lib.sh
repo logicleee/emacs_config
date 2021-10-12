@@ -17,7 +17,7 @@ dotfiles_setup() {
 
     _create_or_append_dotfiles_to_dotfiles_config
     _dotfiles_checkout_local_git_branch
-    dotfiles_link_dotfiles
+    _dotfiles_link_dotfiles
     dotfiles_copy_templates
     dotfiles_emacs_setup
     _dotfiles_update_ssh_folder_permissions
@@ -48,7 +48,8 @@ dotfiles_emacs_setup() {
 
 dotfiles_link_all() {
     if dotfiles_is_cfged; then
-        dotfiles_link_dotfiles
+        _dotfiles_calc_and_export_paths
+        _dotfiles_link_dotfiles
         if emacs_org_is_cfged; then
             _dotfiles_calc_and_export_paths_emacs
             dotfiles_emacs_link_files
@@ -58,6 +59,19 @@ dotfiles_link_all() {
         return 1
     fi
 }
+
+_dotfiles_link_dotfiles() {
+    _dotfiles_create_dotfiles_paths
+    _dotfiles_create_home_folders
+    _dotfiles_link_files
+}
+
+
+_dotfiles_link_emacs() {
+    dotfiles_config_paths_emacs
+    dotfiles_emacs_link_files
+}
+
 
 _dotfiles_calc_and_export_paths() {
     [[ -e ~/.dotfiles_config ]] && source ~/.dotfiles_config || true
@@ -91,12 +105,6 @@ _dotfiles_calc_and_export_paths() {
     [[ "${DEBUG}" == 'true' ]] && dotfiles_config_show_state
 }
 
-dotfiles_link_dotfiles() {
-    _dotfiles_create_dotfiles_paths
-    _dotfiles_create_home_folders
-    _dotfiles_link_files
-}
-
 _dotfiles_checkout_local_git_branch() {
     local _branch="${UID}.$(hostname)"
     cd "${DOTFILES_BASE_PATH}"
@@ -110,11 +118,6 @@ dotfiles_copy_templates() {
     cd "${DOTFILES_CP_USER_COMMON}"
     cp -R -n . "${HOME}/" || true
     cd -
-}
-
-dotfiles_link_emacs() {
-    dotfiles_config_paths_emacs
-    dotfiles_emacs_link_files
 }
 
 _dotfiles_check_config_emacs() {
@@ -738,7 +741,7 @@ dotfiles_config_show_state() {
     cat <<E0F
 
     ################# ENVIRONMENT #################
-$(set | grep "THISDIR\|EMACS_\|DOTFILES\|DEBUG\|PLATFORM\|ZSH" | sort)
+$(set | grep "^THISDIR\|EMACS_\|DOTFILES\|DEBUG\|PLATFORM\|ZSH" | sort)
     ###############################################
 
 E0F
