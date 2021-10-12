@@ -16,7 +16,7 @@ dotfiles_setup() {
         dotfiles_config_show_state
 
     _create_or_append_dotfiles_to_dotfiles_config
-    _dotfiles_create_local_git_branch
+    _dotfiles_checkout_local_git_branch
     dotfiles_link_dotfiles
     dotfiles_copy_templates
     dotfiles_emacs_setup
@@ -97,7 +97,7 @@ dotfiles_link_dotfiles() {
     _dotfiles_link_files
 }
 
-_dotfiles_create_local_git_branch() {
+_dotfiles_checkout_local_git_branch() {
     local _branch="${UID}.$(hostname)"
     cd "${DOTFILES_BASE_PATH}"
     git rev-parse --verify --quiet "${_branch}" >/dev/null ||
@@ -605,8 +605,11 @@ dotfiles_emacs_install_theme_solarized() {
 dotfiles_emacs_update_config() {
     [[ $DEBUG == 'true' ]] && echo "${FUNCNAME[0]}" && dotfiles_config_show_state
     cd "${EMACS_CONFIG_REPO_PATH}/"
-    git pull
+    git checkout main &&
+        git pull &&
+        git submodule update --recursive
     cd -
+    _dotfiles_checkout_local_git_branch
 }
 
 dotfiles_emacs_create_base_paths() {
