@@ -233,6 +233,7 @@ _dotfiles_create_home_folders() {
 
     for _d in ${dotfiles_folders[@]}; do
         local _dir="${HOME}/${_d}"
+        [[ ! -L "${_dir}" ]] || rm "${_dir}"
         [[ -d "${_dir}" ]] || mkdir -p "${_dir}"
     done
 }
@@ -250,6 +251,7 @@ _dotfiles_create_dotfiles_paths() {
     )
 
     for _d in ${_dirs[@]}; do
+        [[ ! -L "${_d}" ]] || rm "${_d}"
         [[ -d "${_d}" ]] || mkdir -p "${_d}"
     done
 
