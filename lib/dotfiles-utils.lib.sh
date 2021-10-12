@@ -661,7 +661,9 @@ dotfiles_config_paths_emacs() {
             _append_gdrive_to_dotfiles_config
             break
             ;;
-        none) ;;
+        none)
+            export EMACS_ORG_BASE_PATH="${EMACS_ORG_BASE_PATH:-${HOME}}"
+            ;;
         *)
             export EMACS_ORG_BASE_PATH="${EMACS_ORG_BASE_PATH:-${HOME}}"
             ;;
